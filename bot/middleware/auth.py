@@ -92,15 +92,27 @@ class AuthMiddleware:
         if update.effective_user:
             user_id = update.effective_user.id
 
-            async with get_db() as db:
-                stmt = select(User).where(User.telegram_id == user_id)
-                result = await db.execute(stmt)
-                user = result.scalar_one_or_none()
+            try:
+                async with get_db() as db:
+                    stmt = select(User).where(User.telegram_id == user_id)
+                    result = await db.execute(stmt)
+                    user = result.scalar_one_or_none()
 
-                # Store user in context for later use
-                context.user_data["db_user"] = user
-                context.user_data["is_authenticated"] = user is not None
-                context.user_data["is_active"] = user.status == UserStatus.ACTIVE if user else False
+                    # Store user in context for later use
+                    context.user_data["db_user"] = user
+                    context.user_data["is_authenticated"] = user is not None
+                    context.user_data["is_active"] = user.status == UserStatus.ACTIVE if user else False
+
+                    logger.debug(f"✅ AuthMiddleware: User {user_id} loaded from DB")
+            except Exception as e:
+                # CRITICAL: Log but don't crash - let bot run even if DB is broken
+                logger.error(f"❌ AuthMiddleware DB error for user {user_id}: {type(e).__name__}: {e}")
+                logger.exception("Full traceback:")
+
+                # Set user as unauthenticated instead of crashing
+                context.user_data["db_user"] = None
+                context.user_data["is_authenticated"] = False
+                context.user_data["is_active"] = False
 
 
 async def check_permission(user_id: int, required_role: UserRole) -> bool:
