@@ -37,9 +37,9 @@ def upgrade() -> None:
     # OPTION 1: EMPTY/TEST DATABASE (RECOMMENDED FOR FIRST DEPLOY)
     # ============================================
     # Use this if you have no production data or can recreate products
-    # ✅ ENABLED: Delete all products before migration (safe for empty database)
+    # ✅ DISABLED: Not needed for empty database (tables don't exist yet)
 
-    op.execute("DELETE FROM products CASCADE;")
+    # op.execute("DELETE FROM products CASCADE;")  # Disabled - not needed for fresh DB
 
     # ============================================
     # OPTION 2: PRODUCTION DATABASE WITH DATA
