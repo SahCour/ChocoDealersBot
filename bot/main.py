@@ -424,6 +424,18 @@ async def post_init(application: Application) -> None:
     await init_db()
     logger.success("Database initialized")
 
+    # ---------------------------------------------------------
+    # Auto-seed database if empty (runs once on first deployment)
+    # ---------------------------------------------------------
+    logger.info("🌱 Checking if database needs seeding...")
+    try:
+        from scripts.seed_data import seed_database
+        await seed_database()
+    except Exception as e:
+        logger.warning(f"⚠️  Database seeding skipped or failed: {e}")
+        # Don't crash bot if seeding fails, it's not critical
+    # ---------------------------------------------------------
+
 
 async def post_shutdown(application: Application) -> None:
     """Cleanup after bot stops"""

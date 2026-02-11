@@ -33,17 +33,26 @@ async def seed_database():
                 return
 
             # ====================================
-            # 1. CREATE ADMIN USER
+            # 1. CREATE ADMIN USERS (Both Owners)
             # ====================================
-            admin_user = User(
+            admin_sah = User(
                 telegram_id=7699749902,  # Sah's Telegram ID
                 username="Sah",
                 first_name="Sah",
                 role=UserRole.ADMIN,
                 status=UserStatus.ACTIVE
             )
-            session.add(admin_user)
-            print("✅ Created admin user: Sah")
+            session.add(admin_sah)
+
+            admin_ksenia = User(
+                telegram_id=47361914,  # Ksenia's Telegram ID
+                username="kseniia_kisa",
+                first_name="Ksenia",
+                role=UserRole.ADMIN,
+                status=UserStatus.ACTIVE
+            )
+            session.add(admin_ksenia)
+            print("✅ Created admin users: Sah & Ksenia")
 
             # ====================================
             # 2. CREATE SAMPLE PRODUCTS
@@ -219,7 +228,7 @@ async def seed_database():
             print("\n🎉 Database seeding completed successfully!")
             print(f"   - {len(products)} products")
             print(f"   - {len(ingredients)} ingredients")
-            print("   - 1 admin user")
+            print("   - 2 admin users (Sah & Ksenia)")
             print("\n💡 You can now use the bot to add stock and start selling!")
 
         except Exception as e:
