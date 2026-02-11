@@ -40,7 +40,8 @@ async def seed_database():
                 username="Sah",
                 first_name="Sah",
                 role=UserRole.ADMIN,
-                status=UserStatus.ACTIVE
+                status=UserStatus.ACTIVE,
+                is_admin=True
             )
             session.add(admin_sah)
 
@@ -49,58 +50,98 @@ async def seed_database():
                 username="kseniia_kisa",
                 first_name="Ksenia",
                 role=UserRole.ADMIN,
-                status=UserStatus.ACTIVE
+                status=UserStatus.ACTIVE,
+                is_admin=True
             )
             session.add(admin_ksenia)
             print("✅ Created admin users: Sah & Ksenia")
+
+            # Flush to get user IDs for later use
+            await session.flush()
 
             # ====================================
             # 2. CREATE SAMPLE PRODUCTS
             # ====================================
             products = [
-                # Chocolate Bars
+                # Chocolate Bars (Our Chocolate)
                 Product(
                     sku="BAR-S-01",
                     name="Dark Chocolate Bar - Small",
-                    category=ProductCategory.CHOCOLATE_BAR,
-                    unit_price=120.00,
-                    description="70% dark chocolate bar, 50g"
+                    category=ProductCategory.OUR_CHOCOLATE,
+                    weight_g=50,
+                    cocoa_percent="70%",
+                    retail_price_thb=120.00,
+                    cogs_thb=60.00,
+                    is_active=True,
+                    notes="70% dark chocolate bar, 50g",
+                    grammovka=50,
+                    unit_type="штука"
                 ),
                 Product(
                     sku="BAR-M-01",
                     name="Milk Chocolate Bar - Medium",
-                    category=ProductCategory.CHOCOLATE_BAR,
-                    unit_price=150.00,
-                    description="Creamy milk chocolate bar, 100g"
+                    category=ProductCategory.OUR_CHOCOLATE,
+                    weight_g=100,
+                    cocoa_percent="40%",
+                    retail_price_thb=150.00,
+                    cogs_thb=75.00,
+                    is_active=True,
+                    notes="Creamy milk chocolate bar, 100g",
+                    grammovka=100,
+                    unit_type="штука"
                 ),
                 Product(
                     sku="BAR-L-01",
                     name="Dark Chocolate Bar - Large",
-                    category=ProductCategory.CHOCOLATE_BAR,
-                    unit_price=250.00,
-                    description="Premium 85% dark chocolate bar, 200g"
+                    category=ProductCategory.OUR_CHOCOLATE,
+                    weight_g=200,
+                    cocoa_percent="85%",
+                    retail_price_thb=250.00,
+                    cogs_thb=120.00,
+                    is_active=True,
+                    notes="Premium 85% dark chocolate bar, 200g",
+                    grammovka=200,
+                    unit_type="штука"
                 ),
-                # Truffles
+                # Truffles (Our Chocolate)
                 Product(
                     sku="TRF-001",
                     name="Classic Truffle",
-                    category=ProductCategory.TRUFFLE,
-                    unit_price=35.00,
-                    description="Hand-rolled dark chocolate truffle"
+                    category=ProductCategory.OUR_CHOCOLATE,
+                    weight_g=20,
+                    cocoa_percent="70%",
+                    retail_price_thb=35.00,
+                    cogs_thb=18.00,
+                    is_active=True,
+                    notes="Hand-rolled dark chocolate truffle",
+                    grammovka=20,
+                    unit_type="штука"
                 ),
                 Product(
                     sku="TRF-002",
                     name="Hazelnut Truffle",
-                    category=ProductCategory.TRUFFLE,
-                    unit_price=40.00,
-                    description="Dark chocolate truffle with hazelnut center"
+                    category=ProductCategory.OUR_CHOCOLATE,
+                    weight_g=22,
+                    cocoa_percent="65%",
+                    retail_price_thb=40.00,
+                    cogs_thb=22.00,
+                    is_active=True,
+                    notes="Dark chocolate truffle with hazelnut center",
+                    grammovka=22,
+                    unit_type="штука"
                 ),
                 Product(
                     sku="TRF-003",
                     name="Raspberry Truffle",
-                    category=ProductCategory.TRUFFLE,
-                    unit_price=45.00,
-                    description="White chocolate truffle with raspberry filling"
+                    category=ProductCategory.OUR_CHOCOLATE,
+                    weight_g=22,
+                    cocoa_percent="35%",
+                    retail_price_thb=45.00,
+                    cogs_thb=25.00,
+                    is_active=True,
+                    notes="White chocolate truffle with raspberry filling",
+                    grammovka=22,
+                    unit_type="штука"
                 ),
             ]
 
@@ -108,93 +149,111 @@ async def seed_database():
                 session.add(product)
             print(f"✅ Created {len(products)} sample products")
 
+            # Flush to get product IDs
+            await session.flush()
+
             # ====================================
             # 3. CREATE SAMPLE INGREDIENTS
             # ====================================
             ingredients = [
-                # Chocolate & Cocoa
+                # Chocolate & Cocoa (CACAO_BASE)
                 Ingredient(
                     code="ING-001",
                     name="Dark Chocolate (70%)",
-                    category=IngredientCategory.CHOCOLATE,
-                    unit=IngredientUnit.KILOGRAM,
-                    unit_cost=450.00,
-                    supplier="Premium Cacao Co."
+                    category=IngredientCategory.CACAO_BASE,
+                    unit=IngredientUnit.KG,
+                    price_per_unit_thb=450.00,
+                    supplier="Premium Cacao Co.",
+                    is_active=True
                 ),
                 Ingredient(
                     code="ING-002",
                     name="Milk Chocolate",
-                    category=IngredientCategory.CHOCOLATE,
-                    unit=IngredientUnit.KILOGRAM,
-                    unit_cost=350.00,
-                    supplier="Premium Cacao Co."
+                    category=IngredientCategory.CACAO_BASE,
+                    unit=IngredientUnit.KG,
+                    price_per_unit_thb=350.00,
+                    supplier="Premium Cacao Co.",
+                    is_active=True
                 ),
                 Ingredient(
                     code="ING-003",
                     name="Cocoa Powder",
-                    category=IngredientCategory.CHOCOLATE,
-                    unit=IngredientUnit.KILOGRAM,
-                    unit_cost=280.00,
-                    supplier="Cocoa Suppliers Ltd."
+                    category=IngredientCategory.CACAO_BASE,
+                    unit=IngredientUnit.KG,
+                    price_per_unit_thb=280.00,
+                    supplier="Cocoa Suppliers Ltd.",
+                    is_active=True
                 ),
-                # Dairy
+                # Dairy (DAIRY_ALT)
                 Ingredient(
                     code="ING-011",
                     name="Heavy Cream",
-                    category=IngredientCategory.DAIRY,
-                    unit=IngredientUnit.LITER,
-                    unit_cost=85.00,
-                    supplier="Fresh Dairy"
+                    category=IngredientCategory.DAIRY_ALT,
+                    unit=IngredientUnit.L,
+                    price_per_unit_thb=85.00,
+                    supplier="Fresh Dairy",
+                    is_active=True
                 ),
                 Ingredient(
                     code="ING-012",
                     name="Butter (Unsalted)",
-                    category=IngredientCategory.DAIRY,
-                    unit=IngredientUnit.KILOGRAM,
-                    unit_cost=180.00,
-                    supplier="Fresh Dairy"
+                    category=IngredientCategory.DAIRY_ALT,
+                    unit=IngredientUnit.KG,
+                    price_per_unit_thb=180.00,
+                    supplier="Fresh Dairy",
+                    is_active=True
                 ),
-                # Sweeteners
+                # Sweeteners (OTHER)
                 Ingredient(
                     code="ING-021",
                     name="Cane Sugar",
-                    category=IngredientCategory.SWEETENER,
-                    unit=IngredientUnit.KILOGRAM,
-                    unit_cost=35.00,
-                    supplier="Sugar Mills Co."
+                    category=IngredientCategory.OTHER,
+                    unit=IngredientUnit.KG,
+                    price_per_unit_thb=35.00,
+                    supplier="Sugar Mills Co.",
+                    is_active=True,
+                    notes="Sweetener"
                 ),
                 Ingredient(
                     code="ING-022",
                     name="Honey",
-                    category=IngredientCategory.SWEETENER,
-                    unit=IngredientUnit.KILOGRAM,
-                    unit_cost=220.00,
-                    supplier="Local Honey Farm"
+                    category=IngredientCategory.OTHER,
+                    unit=IngredientUnit.KG,
+                    price_per_unit_thb=220.00,
+                    supplier="Local Honey Farm",
+                    is_active=True,
+                    notes="Natural sweetener"
                 ),
-                # Nuts & Flavors
+                # Nuts (NUTS_SEEDS)
                 Ingredient(
                     code="ING-031",
                     name="Hazelnuts (Roasted)",
-                    category=IngredientCategory.NUT,
-                    unit=IngredientUnit.KILOGRAM,
-                    unit_cost=420.00,
-                    supplier="Nut Importers Inc."
+                    category=IngredientCategory.NUTS_SEEDS,
+                    unit=IngredientUnit.KG,
+                    price_per_unit_thb=420.00,
+                    supplier="Nut Importers Inc.",
+                    is_active=True
                 ),
+                # Flavors & Fruits (OTHER)
                 Ingredient(
                     code="ING-032",
                     name="Vanilla Extract",
-                    category=IngredientCategory.FLAVORING,
-                    unit=IngredientUnit.LITER,
-                    unit_cost=950.00,
-                    supplier="Flavor House"
+                    category=IngredientCategory.OTHER,
+                    unit=IngredientUnit.L,
+                    price_per_unit_thb=950.00,
+                    supplier="Flavor House",
+                    is_active=True,
+                    notes="Flavoring"
                 ),
                 Ingredient(
                     code="ING-033",
                     name="Raspberry Puree",
-                    category=IngredientCategory.FRUIT,
-                    unit=IngredientUnit.KILOGRAM,
-                    unit_cost=180.00,
-                    supplier="Fruit Suppliers"
+                    category=IngredientCategory.OTHER,
+                    unit=IngredientUnit.KG,
+                    price_per_unit_thb=180.00,
+                    supplier="Fruit Suppliers",
+                    is_active=True,
+                    notes="Fruit filling"
                 ),
             ]
 
@@ -202,22 +261,31 @@ async def seed_database():
                 session.add(ingredient)
             print(f"✅ Created {len(ingredients)} sample ingredients")
 
+            # Flush to get ingredient IDs
+            await session.flush()
+
             # ====================================
             # 4. CREATE INITIAL INVENTORY (EMPTY)
             # ====================================
             # Create inventory records with 0 quantity for all products
             for product in products:
                 inventory_product = InventoryProduct(
-                    sku=product.sku,
-                    quantity_in_stock=0
+                    product_id=product.id,
+                    quantity=0,
+                    min_stock_level=5,
+                    max_stock_level=100,
+                    location="Main Warehouse"
                 )
                 session.add(inventory_product)
 
             # Create inventory records with 0 quantity for all ingredients
             for ingredient in ingredients:
                 inventory_ingredient = InventoryIngredient(
-                    ingredient_code=ingredient.code,
-                    quantity_in_stock=0.0
+                    ingredient_id=ingredient.id,
+                    quantity_kg=0.0,
+                    min_stock_level_kg=1.0,
+                    max_stock_level_kg=50.0,
+                    location="Main Warehouse"
                 )
                 session.add(inventory_ingredient)
 
@@ -226,13 +294,16 @@ async def seed_database():
             # Commit all changes
             await session.commit()
             print("\n🎉 Database seeding completed successfully!")
-            print(f"   - {len(products)} products")
+            print(f"   - {len(products)} products (chocolate bars & truffles)")
             print(f"   - {len(ingredients)} ingredients")
             print("   - 2 admin users (Sah & Ksenia)")
+            print("   - Empty inventory records for all products & ingredients")
             print("\n💡 You can now use the bot to add stock and start selling!")
 
         except Exception as e:
             print(f"❌ Error seeding database: {e}")
+            import traceback
+            traceback.print_exc()
             await session.rollback()
             raise
 
