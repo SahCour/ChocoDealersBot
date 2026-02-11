@@ -17,6 +17,23 @@ depends_on = None
 
 
 def upgrade():
+    # Drop existing enum types if they exist (from previous failed migrations)
+    op.execute("""
+        DROP TYPE IF EXISTS transactionactiontype CASCADE;
+        DROP TYPE IF EXISTS actiontype CASCADE;
+        DROP TYPE IF EXISTS syncstatus CASCADE;
+        DROP TYPE IF EXISTS synctype CASCADE;
+        DROP TYPE IF EXISTS purchasestatus CASCADE;
+        DROP TYPE IF EXISTS productionstatus CASCADE;
+        DROP TYPE IF EXISTS paymentmethod CASCADE;
+        DROP TYPE IF EXISTS salesource CASCADE;
+        DROP TYPE IF EXISTS ingredientunit CASCADE;
+        DROP TYPE IF EXISTS ingredientcategory CASCADE;
+        DROP TYPE IF EXISTS productcategory CASCADE;
+        DROP TYPE IF EXISTS userstatus CASCADE;
+        DROP TYPE IF EXISTS userrole CASCADE;
+    """)
+
     # Create enum types
     op.execute("""
         CREATE TYPE userrole AS ENUM ('ADMIN', 'MANAGER', 'STAFF');
