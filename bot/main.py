@@ -32,118 +32,264 @@ from bot.utils.staff_auth import handle_staff_selection_callback
 setup_logger(settings.log_level, settings.log_file)
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle /start command"""
+async def show_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE, edit: bool = False) -> None:
+    """Show main menu with hierarchical navigation"""
     user = update.effective_user
-    logger.info(f"User {user.id} ({user.username}) started the bot")
 
-    welcome_message = f"""
-🍫 **Welcome to Chocodealers Warehouse Bot!**
+    welcome_message = f"""🍫 **Chocodealers Warehouse Bot**
 
 Hi, {user.first_name}!
 
-This bot helps you manage inventory and sales for Chocodealers chocolate shop.
-
-**📋 MAIN COMMANDS:**
-
-**🆕 Inventory Management:**
-• `/add_inventory` - Add incoming goods
-• `/consume_inventory` - Record consumption/sales
-• `/view_inventory` - View current stock levels
-• `/view_logs` - View transaction history
-• `/correction` - Manual inventory correction (ADMIN)
-
-**Inventory (Legacy):**
-• `/inventory` - Show all inventory
-• `/inventory <SKU>` - Specific product stock
-
-**Sales:**
-• `/sale <SKU> <quantity> [price]` - Register a sale
-
-**Production (MANAGER+):**
-• `/production <SKU> <quantity>` - Produce items
-
-**Purchases (MANAGER+):**
-• `/purchase <code> <quantity>` - Buy ingredients
-
-**Reports (MANAGER+):**
-• `/report day` - Today's report
-• `/report week` - Weekly report
-• `/report month` - Monthly report
-
-**Sync (ADMIN):**
-• `/sync_square` - Sync with Square POS
-• `/sync_sheets` - Sync with Google Sheets
-
-**Help:**
-• `/help` - Show all commands
-• `/status` - Bot and system status
-
-Use `/help` for detailed information about each command.
+Welcome to your warehouse management system.
+Select a category below to get started:
 """
 
-    # Create inline keyboard with main commands
+    # Main menu keyboard
     keyboard = [
         [
-            InlineKeyboardButton("📦 Inventory", callback_data="cmd_view_inventory"),
-            InlineKeyboardButton("➕ Add Stock", callback_data="cmd_add_inventory"),
+            InlineKeyboardButton("📦 Inventory Management", callback_data="menu_inventory"),
         ],
         [
-            InlineKeyboardButton("➖ Consume Stock", callback_data="cmd_consume_inventory"),
-            InlineKeyboardButton("📊 History", callback_data="cmd_view_logs"),
+            InlineKeyboardButton("💰 Sales & Orders", callback_data="menu_sales"),
         ],
         [
-            InlineKeyboardButton("💰 Sales", callback_data="cmd_sale"),
-            InlineKeyboardButton("📈 Reports", callback_data="cmd_reports"),
+            InlineKeyboardButton("🏭 Production", callback_data="menu_production"),
+            InlineKeyboardButton("📊 Reports", callback_data="menu_reports"),
         ],
         [
-            InlineKeyboardButton("ℹ️ Help", callback_data="cmd_help"),
-            InlineKeyboardButton("⚙️ Status", callback_data="cmd_status"),
+            InlineKeyboardButton("⚙️ Admin Panel", callback_data="menu_admin"),
+            InlineKeyboardButton("ℹ️ Help & Info", callback_data="menu_help"),
         ],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    await update.message.reply_text(
-        welcome_message,
-        parse_mode="Markdown",
-        reply_markup=reply_markup
-    )
+    if edit and update.callback_query:
+        await update.callback_query.edit_message_text(
+            welcome_message,
+            parse_mode="Markdown",
+            reply_markup=reply_markup
+        )
+    else:
+        await update.message.reply_text(
+            welcome_message,
+            parse_mode="Markdown",
+            reply_markup=reply_markup
+        )
 
 
-async def handle_main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle inline keyboard button presses from main menu"""
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Handle /start command"""
+    user = update.effective_user
+    logger.info(f"User {user.id} ({user.username}) started the bot")
+    await show_main_menu(update, context, edit=False)
+
+
+async def show_inventory_submenu(query) -> None:
+    """Show inventory management submenu"""
+    message = """📦 **Inventory Management**
+
+Choose an inventory operation:
+"""
+
+    keyboard = [
+        [
+            InlineKeyboardButton("👀 View Stock", callback_data="inv_view_stock"),
+        ],
+        [
+            InlineKeyboardButton("➕ Add Inventory", callback_data="inv_add"),
+            InlineKeyboardButton("➖ Consume Stock", callback_data="inv_consume"),
+        ],
+        [
+            InlineKeyboardButton("🔧 Manual Correction", callback_data="inv_correction"),
+            InlineKeyboardButton("📜 Transaction History", callback_data="inv_history"),
+        ],
+        [
+            InlineKeyboardButton("◀️ Back to Main Menu", callback_data="menu_main"),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await query.edit_message_text(message, parse_mode="Markdown", reply_markup=reply_markup)
+
+
+async def show_sales_submenu(query) -> None:
+    """Show sales & orders submenu"""
+    message = """💰 **Sales & Orders**
+
+Manage your sales operations:
+"""
+
+    keyboard = [
+        [
+            InlineKeyboardButton("💵 Register Quick Sale", callback_data="sale_quick"),
+        ],
+        [
+            InlineKeyboardButton("📊 View Sales Report", callback_data="sale_report"),
+        ],
+        [
+            InlineKeyboardButton("◀️ Back to Main Menu", callback_data="menu_main"),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await query.edit_message_text(message, parse_mode="Markdown", reply_markup=reply_markup)
+
+
+async def show_reports_submenu(query) -> None:
+    """Show reports submenu"""
+    message = """📊 **Reports & Analytics**
+
+View business reports:
+"""
+
+    keyboard = [
+        [
+            InlineKeyboardButton("📅 Daily Report", callback_data="report_day"),
+        ],
+        [
+            InlineKeyboardButton("📆 Weekly Report", callback_data="report_week"),
+            InlineKeyboardButton("📊 Monthly Report", callback_data="report_month"),
+        ],
+        [
+            InlineKeyboardButton("◀️ Back to Main Menu", callback_data="menu_main"),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await query.edit_message_text(message, parse_mode="Markdown", reply_markup=reply_markup)
+
+
+async def show_admin_submenu(query) -> None:
+    """Show admin panel submenu"""
+    message = """⚙️ **Admin Panel**
+
+Administrative functions:
+"""
+
+    keyboard = [
+        [
+            InlineKeyboardButton("👥 Manage Users", callback_data="admin_users"),
+        ],
+        [
+            InlineKeyboardButton("🔄 Sync Square POS", callback_data="admin_sync_square"),
+            InlineKeyboardButton("📊 Sync Google Sheets", callback_data="admin_sync_sheets"),
+        ],
+        [
+            InlineKeyboardButton("🔄 Sync All Systems", callback_data="admin_sync_all"),
+        ],
+        [
+            InlineKeyboardButton("◀️ Back to Main Menu", callback_data="menu_main"),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await query.edit_message_text(message, parse_mode="Markdown", reply_markup=reply_markup)
+
+
+async def show_help_submenu(query) -> None:
+    """Show help & info submenu"""
+    message = """ℹ️ **Help & Information**
+
+Get assistance and system info:
+"""
+
+    keyboard = [
+        [
+            InlineKeyboardButton("📖 Command Guide", callback_data="help_guide"),
+            InlineKeyboardButton("📊 System Status", callback_data="help_status"),
+        ],
+        [
+            InlineKeyboardButton("👤 My Profile", callback_data="help_profile"),
+        ],
+        [
+            InlineKeyboardButton("◀️ Back to Main Menu", callback_data="menu_main"),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await query.edit_message_text(message, parse_mode="Markdown", reply_markup=reply_markup)
+
+
+async def handle_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Handle all menu navigation callbacks"""
     query = update.callback_query
-    await query.answer()  # Acknowledge button press
-
-    # Map callback_data to commands
-    command_map = {
-        "cmd_view_inventory": "/view_inventory",
-        "cmd_add_inventory": "/add_inventory",
-        "cmd_consume_inventory": "/consume_inventory",
-        "cmd_view_logs": "/view_logs",
-        "cmd_sale": "💰 To register a sale, use:\n`/sale <SKU> <quantity> [price]`\n\nExample: `/sale BAR-S-01 5`",
-        "cmd_reports": "📈 Available reports:\n• `/report day` - Today's report\n• `/report week` - Weekly report\n• `/report month` - Monthly report",
-        "cmd_help": "/help",
-        "cmd_status": "/status",
-    }
+    await query.answer()
 
     callback_data = query.data
 
-    if callback_data in command_map:
-        response = command_map[callback_data]
+    # Main menu navigation
+    if callback_data == "menu_main":
+        await show_main_menu(update, context, edit=True)
 
-        # If it's a command, send it as text so user can click it
-        if response.startswith("/"):
-            await query.message.reply_text(
-                f"👉 Click the command: {response}",
-                parse_mode="Markdown"
-            )
-        else:
-            # If it's an info message, send directly
-            await query.message.reply_text(
-                response,
-                parse_mode="Markdown"
-            )
+    # Submenu navigation
+    elif callback_data == "menu_inventory":
+        await show_inventory_submenu(query)
+    elif callback_data == "menu_sales":
+        await show_sales_submenu(query)
+    elif callback_data == "menu_reports":
+        await show_reports_submenu(query)
+    elif callback_data == "menu_admin":
+        await show_admin_submenu(query)
+    elif callback_data == "menu_help":
+        await show_help_submenu(query)
+
+    # Inventory actions
+    elif callback_data == "inv_view_stock":
+        await query.edit_message_text("Use command: /view_inventory")
+    elif callback_data == "inv_add":
+        await query.edit_message_text("Use command: /add_inventory")
+    elif callback_data == "inv_consume":
+        await query.edit_message_text("Use command: /consume_inventory")
+    elif callback_data == "inv_correction":
+        await query.edit_message_text("Use command: /correction")
+    elif callback_data == "inv_history":
+        await query.edit_message_text("Use command: /view_logs")
+
+    # Sales actions
+    elif callback_data == "sale_quick":
+        await query.edit_message_text(
+            "💰 To register a sale, use:\n\n"
+            "/sale <SKU> <quantity> [price]\n\n"
+            "Example: /sale BAR-S-01 5"
+        )
+    elif callback_data == "sale_report":
+        await query.edit_message_text("Use command: /report day")
+
+    # Reports actions
+    elif callback_data == "report_day":
+        await query.edit_message_text("Use command: /report day")
+    elif callback_data == "report_week":
+        await query.edit_message_text("Use command: /report week")
+    elif callback_data == "report_month":
+        await query.edit_message_text("Use command: /report month")
+
+    # Admin actions
+    elif callback_data == "admin_users":
+        await query.edit_message_text("Use command: /users")
+    elif callback_data == "admin_sync_square":
+        await query.edit_message_text("Use command: /sync_square")
+    elif callback_data == "admin_sync_sheets":
+        await query.edit_message_text("Use command: /sync_sheets")
+    elif callback_data == "admin_sync_all":
+        await query.edit_message_text("Use command: /sync_all")
+
+    # Help actions
+    elif callback_data == "help_guide":
+        await query.edit_message_text("Use command: /help")
+    elif callback_data == "help_status":
+        await query.edit_message_text("Use command: /status")
+    elif callback_data == "help_profile":
+        await query.edit_message_text("Use command: /profile")
+
+    # Production menu (simple for now)
+    elif callback_data == "menu_production":
+        await query.edit_message_text(
+            "🏭 **Production**\n\n"
+            "To produce items, use:\n\n"
+            "/production <SKU> <quantity>\n\n"
+            "Example: /production BAR-S-01 100\n\n"
+            "Note: Requires MANAGER or ADMIN role."
+        )
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -310,8 +456,8 @@ def main() -> None:
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("status", status_command))
 
-    # Main menu callback handler (for inline keyboard buttons)
-    application.add_handler(CallbackQueryHandler(handle_main_menu_callback, pattern=r"^cmd_"))
+    # Menu navigation callback handler (for all inline keyboard buttons)
+    application.add_handler(CallbackQueryHandler(handle_menu_callback, pattern=r"^(menu_|inv_|sale_|report_|admin_|help_)"))
 
     # Inventory commands (legacy)
     application.add_handler(CommandHandler("inventory", commands.inventory_command))
