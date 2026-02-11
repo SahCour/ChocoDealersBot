@@ -6,12 +6,10 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 from sqlalchemy import text
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
-import logging
+from loguru import logger
 
 from config.config import settings
 from database.models import Base
-
-logger = logging.getLogger(__name__)
 
 def get_async_database_url(url: str) -> str:
     """Convert PostgreSQL URL to async format"""

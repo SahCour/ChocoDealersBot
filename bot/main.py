@@ -390,8 +390,11 @@ Use `/help` for list of all commands.
 async def post_init(application: Application) -> None:
     """Initialize database and other services after bot starts"""
     logger.info("🔄 Running post-init setup...")
+    logger.info(f"📊 Database URL: {settings.database_url[:30]}...")
+
     try:
         # Force database table creation
+        logger.info("📦 Starting database initialization...")
         await init_db()
         logger.success("✅ Database initialized successfully")
 
@@ -400,12 +403,14 @@ async def post_init(application: Application) -> None:
         try:
             from scripts.seed_data import seed_database
             await seed_database()
+            logger.success("✅ Database seeding completed")
         except Exception as e:
-            logger.warning(f"⚠️  Database seeding skipped or failed: {e}")
+            logger.exception(f"⚠️  Database seeding failed: {e}")
             # Don't crash bot if seeding fails, it's not critical
 
     except Exception as e:
-        logger.exception(f"❌ CRITICAL: Failed to initialize database: {e}")
+        logger.exception(f"❌ CRITICAL: Failed to initialize database!")
+        logger.error(f"Error details: {type(e).__name__}: {e}")
         # Don't exit here, let the bot run so we can see logs,
         # but functionality will be broken.
 
