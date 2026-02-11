@@ -17,6 +17,8 @@ from telegram.ext import (
 )
 from loguru import logger
 import sys
+from alembic.config import Config
+from alembic import command
 
 from config.config import settings
 from database.db import init_db, close_db
@@ -186,6 +188,35 @@ Use `/help` for list of all commands.
 async def post_init(application: Application) -> None:
     """Initialize database and other services after bot starts"""
     logger.info("Initializing database...")
+
+    # ---------------------------------------------------------
+    # Run Alembic migration programmatically from Python code
+    # This avoids silent crashes from shell command execution
+    # ---------------------------------------------------------
+    logger.info("🚀 Starting Alembic Migration...")
+    try:
+        # Point to alembic.ini in project root
+        alembic_cfg = Config("alembic.ini")
+
+        # Explicitly set script location (alembic may lose path to env.py)
+        alembic_cfg.set_main_option("script_location", "alembic")
+
+        # Explicitly set database URL so alembic doesn't search for it
+        alembic_cfg.set_main_option("sqlalchemy.url", settings.database_url)
+
+        # Run migration in a thread to avoid blocking the event loop
+        # (migrations are synchronous blocking operations)
+        await asyncio.to_thread(command.upgrade, alembic_cfg, "head")
+
+        logger.success("✅ Alembic Migration Completed Successfully!")
+
+    except Exception as e:
+        logger.error(f"❌ Migration Failed: {e}")
+        # Re-raise to prevent bot from running with incomplete database
+        raise e
+    # ---------------------------------------------------------
+
+    # Original init_db (now just logs, migration handled above)
     await init_db()
     logger.success("Database initialized")
 
