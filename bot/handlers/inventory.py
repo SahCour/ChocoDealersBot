@@ -669,7 +669,6 @@ def get_add_inventory_handler() -> ConversationHandler:
     return ConversationHandler(
         entry_points=[
             CommandHandler("add_inventory", add_inventory_start),
-            CommandHandler("приход", add_inventory_start),  # Russian alias
         ],
         states={
             SELECT_CATEGORY: [
@@ -697,7 +696,6 @@ def get_consume_inventory_handler() -> ConversationHandler:
     return ConversationHandler(
         entry_points=[
             CommandHandler("consume_inventory", consume_inventory_start),
-            CommandHandler("расход", consume_inventory_start),  # Russian alias
         ],
         states={
             SELECT_CATEGORY: [

@@ -45,8 +45,8 @@ This bot helps you manage inventory and sales for Chocodealers chocolate shop.
 **📋 MAIN COMMANDS:**
 
 **🆕 Inventory Management:**
-• `/add_inventory` (or `/приход`) - Add incoming goods
-• `/consume_inventory` (or `/расход`) - Record consumption/sales
+• `/add_inventory` - Add incoming goods
+• `/consume_inventory` - Record consumption/sales
 • `/view_inventory` - View current stock levels
 • `/view_logs` - View transaction history
 • `/correction` - Manual inventory correction (ADMIN)
