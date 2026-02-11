@@ -26,17 +26,20 @@ def setup_logger(log_level: str = "INFO", log_file: str = "./logs/chocodealers_b
         colorize=True
     )
 
-    # Add file handler with rotation
-    log_path = Path(log_file)
-    log_path.parent.mkdir(parents=True, exist_ok=True)
+    # Add file handler with rotation (skip if filesystem is read-only)
+    try:
+        log_path = Path(log_file)
+        log_path.parent.mkdir(parents=True, exist_ok=True)
 
-    logger.add(
-        log_file,
-        format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function} - {message}",
-        level=log_level,
-        rotation="10 MB",
-        retention="1 month",
-        compression="zip"
-    )
-
-    logger.info(f"Logger initialized. Level: {log_level}, File: {log_file}")
+        logger.add(
+            log_file,
+            format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function} - {message}",
+            level=log_level,
+            rotation="10 MB",
+            retention="1 month",
+            compression="zip"
+        )
+        logger.info(f"Logger initialized. Level: {log_level}, File: {log_file}")
+    except (OSError, PermissionError) as e:
+        logger.warning(f"Could not create log file (using stdout only): {e}")
+        logger.info(f"Logger initialized. Level: {log_level}, Console only")

@@ -101,9 +101,12 @@ class Settings(BaseSettings):
 
     def validate_paths(self) -> None:
         """Ensure required directories exist"""
-        # Create logs directory
-        log_dir = Path(self.log_file).parent
-        log_dir.mkdir(parents=True, exist_ok=True)
+        # Create logs directory (skip if filesystem is read-only, e.g. in Railway)
+        try:
+            log_dir = Path(self.log_file).parent
+            log_dir.mkdir(parents=True, exist_ok=True)
+        except (OSError, PermissionError) as e:
+            print(f"⚠️  Could not create log directory (using stdout only): {e}")
 
         # Check Google credentials file
         if self.google_credentials_file:
