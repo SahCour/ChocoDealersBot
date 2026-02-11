@@ -18,6 +18,7 @@ depends_on = None
 
 def upgrade():
     # Drop existing enum types if they exist (from previous failed migrations)
+    # SQLAlchemy will create them automatically when creating tables
     op.execute("""
         DROP TYPE IF EXISTS transactionactiontype CASCADE;
         DROP TYPE IF EXISTS actiontype CASCADE;
@@ -32,31 +33,6 @@ def upgrade():
         DROP TYPE IF EXISTS productcategory CASCADE;
         DROP TYPE IF EXISTS userstatus CASCADE;
         DROP TYPE IF EXISTS userrole CASCADE;
-    """)
-
-    # Create enum types
-    op.execute("""
-        CREATE TYPE userrole AS ENUM ('ADMIN', 'MANAGER', 'STAFF');
-        CREATE TYPE userstatus AS ENUM ('ACTIVE', 'INACTIVE', 'SUSPENDED');
-        CREATE TYPE productcategory AS ENUM (
-            'OUR_CHOCOLATE', 'CHOCOLATE_INGREDIENTS', 'CHINESE_TEA', 'BEVERAGES_COFFEE',
-            'SHOP_MERCHANDISE', 'HOUSEHOLD_ITEMS', 'CHOCOLATE_PACKAGING', 'OTHER_PACKAGING',
-            'PRINTING_MATERIALS', 'AI_EXPENSES', 'EQUIPMENT_MATERIALS'
-        );
-        CREATE TYPE ingredientcategory AS ENUM (
-            'CACAO_BASE', 'NUTS_SEEDS', 'DAIRY_ALT', 'COFFEE', 'TEA', 'PACKAGING', 'SPICES', 'OTHER'
-        );
-        CREATE TYPE ingredientunit AS ENUM ('kg', 'L', 'pc', 'btl');
-        CREATE TYPE salesource AS ENUM ('TELEGRAM_BOT', 'SQUARE_POS', 'MANUAL');
-        CREATE TYPE paymentmethod AS ENUM ('CASH', 'CARD', 'BANK_TRANSFER', 'CRYPTO', 'OTHER');
-        CREATE TYPE productionstatus AS ENUM ('PLANNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED');
-        CREATE TYPE purchasestatus AS ENUM ('ORDERED', 'RECEIVED', 'CANCELLED');
-        CREATE TYPE synctype AS ENUM ('INVENTORY', 'SALES', 'PRODUCTS', 'FULL');
-        CREATE TYPE syncstatus AS ENUM ('SUCCESS', 'FAILED', 'IN_PROGRESS');
-        CREATE TYPE actiontype AS ENUM (
-            'CREATE', 'UPDATE', 'DELETE', 'SALE', 'PRODUCTION', 'PURCHASE', 'INVENTORY_ADJUST', 'SYNC'
-        );
-        CREATE TYPE transactionactiontype AS ENUM ('ADD', 'CONSUME', 'CORRECTION');
     """)
 
     # Create users table
