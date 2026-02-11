@@ -31,21 +31,21 @@ class Settings(BaseSettings):
     database_url: str = Field(..., env="DATABASE_URL")
 
     # ============================================
-    # SQUARE API
+    # SQUARE API (OPTIONAL)
     # ============================================
-    square_access_token: str = Field(..., env="SQUARE_ACCESS_TOKEN")
-    square_location_id: str = Field(..., env="SQUARE_LOCATION_ID")
+    square_access_token: Optional[str] = Field(default=None, env="SQUARE_ACCESS_TOKEN")
+    square_location_id: Optional[str] = Field(default=None, env="SQUARE_LOCATION_ID")
     square_environment: str = Field(default="sandbox", env="SQUARE_ENVIRONMENT")
     square_application_id: Optional[str] = Field(default=None, env="SQUARE_APPLICATION_ID")
 
     # ============================================
-    # GOOGLE SHEETS
+    # GOOGLE SHEETS (OPTIONAL)
     # ============================================
-    google_credentials_file: str = Field(
-        default="./config/google_credentials.json",
+    google_credentials_file: Optional[str] = Field(
+        default=None,
         env="GOOGLE_CREDENTIALS_FILE"
     )
-    google_sheet_id: str = Field(..., env="GOOGLE_SHEET_ID")
+    google_sheet_id: Optional[str] = Field(default=None, env="GOOGLE_SHEET_ID")
     sheet_name_sales: str = Field(default="Sales", env="SHEET_NAME_SALES")
     sheet_name_inventory: str = Field(default="Inventory", env="SHEET_NAME_INVENTORY")
     sheet_name_purchases: str = Field(default="Purchases", env="SHEET_NAME_PURCHASES")
@@ -83,7 +83,10 @@ class Settings(BaseSettings):
     # ============================================
     # SECURITY
     # ============================================
-    secret_key: str = Field(..., env="SECRET_KEY")
+    secret_key: str = Field(
+        default="change-this-in-production-use-random-string",
+        env="SECRET_KEY"
+    )
     max_requests_per_minute: int = Field(default=30, env="MAX_REQUESTS_PER_MINUTE")
 
     # ============================================
