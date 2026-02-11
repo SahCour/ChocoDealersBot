@@ -5,7 +5,7 @@ Main entry point
 
 import asyncio
 import logging
-from telegram import Update
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -82,10 +82,68 @@ This bot helps you manage inventory and sales for Chocodealers chocolate shop.
 Use `/help` for detailed information about each command.
 """
 
+    # Create inline keyboard with main commands
+    keyboard = [
+        [
+            InlineKeyboardButton("📦 Инвентарь", callback_data="cmd_view_inventory"),
+            InlineKeyboardButton("➕ Добавить товар", callback_data="cmd_add_inventory"),
+        ],
+        [
+            InlineKeyboardButton("➖ Списать товар", callback_data="cmd_consume_inventory"),
+            InlineKeyboardButton("📊 История", callback_data="cmd_view_logs"),
+        ],
+        [
+            InlineKeyboardButton("💰 Продажа", callback_data="cmd_sale"),
+            InlineKeyboardButton("📈 Отчёты", callback_data="cmd_reports"),
+        ],
+        [
+            InlineKeyboardButton("ℹ️ Помощь", callback_data="cmd_help"),
+            InlineKeyboardButton("⚙️ Статус", callback_data="cmd_status"),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
     await update.message.reply_text(
         welcome_message,
-        parse_mode="Markdown"
+        parse_mode="Markdown",
+        reply_markup=reply_markup
     )
+
+
+async def handle_main_menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Handle inline keyboard button presses from main menu"""
+    query = update.callback_query
+    await query.answer()  # Acknowledge button press
+
+    # Map callback_data to commands
+    command_map = {
+        "cmd_view_inventory": "/view_inventory",
+        "cmd_add_inventory": "/add_inventory",
+        "cmd_consume_inventory": "/consume_inventory",
+        "cmd_view_logs": "/view_logs",
+        "cmd_sale": "💰 Чтобы зарегистрировать продажу, используй:\n`/sale <SKU> <количество> [цена]`\n\nПример: `/sale BAR-S-01 5`",
+        "cmd_reports": "📈 Доступные отчёты:\n• `/report day` - За сегодня\n• `/report week` - За неделю\n• `/report month` - За месяц",
+        "cmd_help": "/help",
+        "cmd_status": "/status",
+    }
+
+    callback_data = query.data
+
+    if callback_data in command_map:
+        response = command_map[callback_data]
+
+        # If it's a command, send it as text so user can click it
+        if response.startswith("/"):
+            await query.message.reply_text(
+                f"👉 Нажми на команду: {response}",
+                parse_mode="Markdown"
+            )
+        else:
+            # If it's an info message, send directly
+            await query.message.reply_text(
+                response,
+                parse_mode="Markdown"
+            )
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -251,6 +309,9 @@ def main() -> None:
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("status", status_command))
+
+    # Main menu callback handler (for inline keyboard buttons)
+    application.add_handler(CallbackQueryHandler(handle_main_menu_callback, pattern=r"^cmd_"))
 
     # Inventory commands (legacy)
     application.add_handler(CommandHandler("inventory", commands.inventory_command))
