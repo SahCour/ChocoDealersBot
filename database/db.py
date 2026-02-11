@@ -51,13 +51,11 @@ async def init_db() -> None:
     Note: In production, use Alembic migrations instead
     """
     async with engine.begin() as conn:
-        # ВРЕМЕННЫЙ КОД ДЛЯ ОЧИСТКИ (удалите после успешного запуска!)
-        logger.warning("!!! ПРОВЕДЕНИЕ ПОЛНОЙ ОЧИСТКИ БАЗЫ ДАННЫХ !!!")
-        await conn.execute(text("DROP SCHEMA public CASCADE;"))
-        await conn.execute(text("CREATE SCHEMA public;"))
-        await conn.execute(text("GRANT ALL ON SCHEMA public TO public;"))
+        # For development: create all tables
+        # await conn.run_sync(Base.metadata.create_all)
 
-        logger.info("Database initialized and cleaned.")
+        # For production: use Alembic migrations
+        logger.info("Database initialized. Use Alembic for migrations in production.")
 
 
 async def close_db() -> None:
