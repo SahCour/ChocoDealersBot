@@ -65,65 +65,65 @@ async def seed_database():
                 # === Cacao & Base ===
                 Ingredient(
                     code='ING-001', name='Cocoa Butter', category=IngredientCategory.CACAO_BASE,
-                    unit=IngredientUnit.KG, price_per_unit_thb=900, supplier='Mark Rin', notes='Base fat'
+                    unit=IngredientUnit.kg, price_per_unit_thb=900, supplier='Mark Rin', notes='Base fat'
                 ),
                 Ingredient(
                     code='ING-002', name='Cocoa Powder', category=IngredientCategory.CACAO_BASE,
-                    unit=IngredientUnit.KG, price_per_unit_thb=550, supplier='Mark Rin', notes='Base dry'
+                    unit=IngredientUnit.kg, price_per_unit_thb=550, supplier='Mark Rin', notes='Base dry'
                 ),
                 Ingredient(
                     code='ING-003', name='Coconut Sugar (Granulated)', category=IngredientCategory.CACAO_BASE,
-                    unit=IngredientUnit.KG, price_per_unit_thb=110, supplier='Wholesale', notes='Main sweetener'
+                    unit=IngredientUnit.kg, price_per_unit_thb=110, supplier='Wholesale', notes='Main sweetener'
                 ),
                 Ingredient(
                     code='ING-004', name='Monk Fruit Mix (Erythritol)', category=IngredientCategory.CACAO_BASE,
-                    unit=IngredientUnit.KG, price_per_unit_thb=550, supplier='Specialty', notes='For Keto/No Sugar'
+                    unit=IngredientUnit.kg, price_per_unit_thb=550, supplier='Specialty', notes='For Keto/No Sugar'
                 ),
                 Ingredient(
                     code='ING-005', name='MCT Oil', category=IngredientCategory.CACAO_BASE,
-                    unit=IngredientUnit.KG, price_per_unit_thb=660, supplier='Specialty', notes='For Bulletproof/Keto'
+                    unit=IngredientUnit.kg, price_per_unit_thb=660, supplier='Specialty', notes='For Bulletproof/Keto'
                 ),
                 Ingredient(
                     code='ING-006', name='Coconut Meat (Nam Hom)', category=IngredientCategory.CACAO_BASE,
-                    unit=IngredientUnit.KG, price_per_unit_thb=159, supplier='Makro/Local', notes='Frozen Flesh (Escimo)'
+                    unit=IngredientUnit.kg, price_per_unit_thb=159, supplier='Makro/Local', notes='Frozen Flesh (Escimo)'
                 ),
 
                 # === Nuts & Seeds ===
                 Ingredient(
                     code='ING-010', name='Cashew Nut (Broken)', category=IngredientCategory.NUTS_SEEDS,
-                    unit=IngredientUnit.KG, price_per_unit_thb=225, supplier='Makro/Aro/Heritage', notes='For Milk Base & Truffles'
+                    unit=IngredientUnit.kg, price_per_unit_thb=225, supplier='Makro/Aro/Heritage', notes='For Milk Base & Truffles'
                 ),
                 Ingredient(
                     code='ING-011', name='Almond (Sliced/Petal)', category=IngredientCategory.NUTS_SEEDS,
-                    unit=IngredientUnit.KG, price_per_unit_thb=225, supplier='Makro/Aro/Heritage', notes='For Marzipan (No skin)'
+                    unit=IngredientUnit.kg, price_per_unit_thb=225, supplier='Makro/Aro/Heritage', notes='For Marzipan (No skin)'
                 ),
                 Ingredient(
                     code='ING-012', name='Pecan Nut (Heritage)', category=IngredientCategory.NUTS_SEEDS,
-                    unit=IngredientUnit.KG, price_per_unit_thb=840, supplier='Heritage', notes='Premium (420฿/500g)'
+                    unit=IngredientUnit.kg, price_per_unit_thb=840, supplier='Heritage', notes='Premium (420฿/500g)'
                 ),
                 Ingredient(
                     code='ING-013', name='Pistachio (Shelled)', category=IngredientCategory.NUTS_SEEDS,
-                    unit=IngredientUnit.KG, price_per_unit_thb=1320, supplier='Heritage', notes='Premium (330฿/250g)'
+                    unit=IngredientUnit.kg, price_per_unit_thb=1320, supplier='Heritage', notes='Premium (330฿/250g)'
                 ),
                 Ingredient(
                     code='ING-014', name='Macadamia (Local)', category=IngredientCategory.NUTS_SEEDS,
-                    unit=IngredientUnit.KG, price_per_unit_thb=900, supplier='Local Thai', notes='Thai Local'
+                    unit=IngredientUnit.kg, price_per_unit_thb=900, supplier='Local Thai', notes='Thai Local'
                 ),
                 Ingredient(
                     code='ING-015', name='Hazelnut', category=IngredientCategory.NUTS_SEEDS,
-                    unit=IngredientUnit.KG, price_per_unit_thb=600, supplier='Heritage', notes='Dynamic price'
+                    unit=IngredientUnit.kg, price_per_unit_thb=600, supplier='Heritage', notes='Dynamic price'
                 ),
                 Ingredient(
                     code='ING-016', name='Walnut', category=IngredientCategory.NUTS_SEEDS,
-                    unit=IngredientUnit.KG, price_per_unit_thb=550, supplier='Aro', notes='Aro Vacuum'
+                    unit=IngredientUnit.kg, price_per_unit_thb=550, supplier='Aro', notes='Aro Vacuum'
                 ),
                 Ingredient(
                     code='ING-017', name='Pumpkin Seeds', category=IngredientCategory.NUTS_SEEDS,
-                    unit=IngredientUnit.KG, price_per_unit_thb=310, supplier='Wholesale', notes='155฿/500g'
+                    unit=IngredientUnit.kg, price_per_unit_thb=310, supplier='Wholesale', notes='155฿/500g'
                 ),
                 Ingredient(
                     code='ING-018', name='Sesame White', category=IngredientCategory.NUTS_SEEDS,
-                    unit=IngredientUnit.KG, price_per_unit_thb=120, supplier='Wholesale', notes='For Halva/Symphony'
+                    unit=IngredientUnit.kg, price_per_unit_thb=120, supplier='Wholesale', notes='For Halva/Symphony'
                 ),
 
                 # === Dairy Alternatives & Liquids ===
@@ -133,7 +133,7 @@ async def seed_database():
                 ),
                 Ingredient(
                     code='ING-021', name='Cashew Cream Base (Homemade)', category=IngredientCategory.DAIRY_ALT,
-                    unit=IngredientUnit.KG, price_per_unit_thb=73, supplier='Homemade',
+                    unit=IngredientUnit.kg, price_per_unit_thb=73, supplier='Homemade',
                     notes='Calc: 120g Cashew + 100g Sugar + 300g Water'
                 ),
                 Ingredient(
@@ -144,53 +144,53 @@ async def seed_database():
                 # === Spices ===
                 Ingredient(
                     code='ING-023', name='Vanilla Extract (Imition)', category=IngredientCategory.SPICES,
-                    unit=IngredientUnit.BTL, price_per_unit_thb=100, supplier='Wholesale', notes='~100ml Bottle'
+                    unit=IngredientUnit.btl, price_per_unit_thb=100, supplier='Wholesale', notes='~100ml Bottle'
                 ),
 
                 # === Coffee Beans ===
                 Ingredient(
                     code='ING-030', name='Ben Coffee (Medium)', category=IngredientCategory.COFFEE,
-                    unit=IngredientUnit.KG, price_per_unit_thb=460, supplier='China Import', notes='China Import'
+                    unit=IngredientUnit.kg, price_per_unit_thb=460, supplier='China Import', notes='China Import'
                 ),
                 Ingredient(
                     code='ING-031', name='Brazil Roast', category=IngredientCategory.COFFEE,
-                    unit=IngredientUnit.KG, price_per_unit_thb=800, supplier='Chiang Mai', notes='Chiang Mai'
+                    unit=IngredientUnit.kg, price_per_unit_thb=800, supplier='Chiang Mai', notes='Chiang Mai'
                 ),
                 Ingredient(
                     code='ING-032', name='Ethiopia / Thai Premium', category=IngredientCategory.COFFEE,
-                    unit=IngredientUnit.KG, price_per_unit_thb=1500, supplier='Specialty', notes='Specialty / Bulletproof'
+                    unit=IngredientUnit.kg, price_per_unit_thb=1500, supplier='Specialty', notes='Specialty / Bulletproof'
                 ),
 
                 # === Chinese Tea ===
                 Ingredient(
                     code='ING-040', name='Pu-erh (Old Stock)', category=IngredientCategory.TEA,
-                    unit=IngredientUnit.KG, price_per_unit_thb=1000, supplier='Direct Sourcing', notes='Price will increase'
+                    unit=IngredientUnit.kg, price_per_unit_thb=1000, supplier='Direct Sourcing', notes='Price will increase'
                 ),
                 Ingredient(
                     code='ING-041', name='White Tea', category=IngredientCategory.TEA,
-                    unit=IngredientUnit.KG, price_per_unit_thb=2000, supplier='Direct Sourcing', notes=''
+                    unit=IngredientUnit.kg, price_per_unit_thb=2000, supplier='Direct Sourcing', notes=''
                 ),
                 Ingredient(
                     code='ING-042', name='Da Hong Pao', category=IngredientCategory.TEA,
-                    unit=IngredientUnit.KG, price_per_unit_thb=2000, supplier='Direct Sourcing', notes=''
+                    unit=IngredientUnit.kg, price_per_unit_thb=2000, supplier='Direct Sourcing', notes=''
                 ),
                 Ingredient(
                     code='ING-043', name='Gaba Tea (Avg)', category=IngredientCategory.TEA,
-                    unit=IngredientUnit.KG, price_per_unit_thb=6000, supplier='Direct Sourcing', notes='Range 4000-8000฿'
+                    unit=IngredientUnit.kg, price_per_unit_thb=6000, supplier='Direct Sourcing', notes='Range 4000-8000฿'
                 ),
 
                 # === Packaging ===
                 Ingredient(
                     code='PKG-001', name='Wrapper Small (31g)', category=IngredientCategory.PACKAGING,
-                    unit=IngredientUnit.PC, price_per_unit_thb=5.5, supplier='Supplier', notes=''
+                    unit=IngredientUnit.pc, price_per_unit_thb=5.5, supplier='Supplier', notes=''
                 ),
                 Ingredient(
                     code='PKG-002', name='Wrapper Large (75g)', category=IngredientCategory.PACKAGING,
-                    unit=IngredientUnit.PC, price_per_unit_thb=12.5, supplier='Supplier', notes=''
+                    unit=IngredientUnit.pc, price_per_unit_thb=12.5, supplier='Supplier', notes=''
                 ),
                 Ingredient(
                     code='PKG-003', name='Popsicle Stick', category=IngredientCategory.PACKAGING,
-                    unit=IngredientUnit.PC, price_per_unit_thb=0.5, supplier='Supplier', notes='Est.'
+                    unit=IngredientUnit.pc, price_per_unit_thb=0.5, supplier='Supplier', notes='Est.'
                 ),
             ]
 

@@ -62,10 +62,10 @@ class IngredientCategory(str, PyEnum):
 
 
 class IngredientUnit(str, PyEnum):
-    KG = "kg"
+    kg = "kg"  # FIXED: lowercase to match PostgreSQL enum
     L = "L"
-    PC = "pc"
-    BTL = "btl"
+    pc = "pc"  # FIXED: lowercase to match PostgreSQL enum
+    btl = "btl"  # FIXED: lowercase to match PostgreSQL enum
 
 
 class SaleSource(str, PyEnum):
