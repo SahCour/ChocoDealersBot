@@ -85,20 +85,20 @@ Use `/help` for detailed information about each command.
     # Create inline keyboard with main commands
     keyboard = [
         [
-            InlineKeyboardButton("📦 Инвентарь", callback_data="cmd_view_inventory"),
-            InlineKeyboardButton("➕ Добавить товар", callback_data="cmd_add_inventory"),
+            InlineKeyboardButton("📦 Inventory", callback_data="cmd_view_inventory"),
+            InlineKeyboardButton("➕ Add Stock", callback_data="cmd_add_inventory"),
         ],
         [
-            InlineKeyboardButton("➖ Списать товар", callback_data="cmd_consume_inventory"),
-            InlineKeyboardButton("📊 История", callback_data="cmd_view_logs"),
+            InlineKeyboardButton("➖ Consume Stock", callback_data="cmd_consume_inventory"),
+            InlineKeyboardButton("📊 History", callback_data="cmd_view_logs"),
         ],
         [
-            InlineKeyboardButton("💰 Продажа", callback_data="cmd_sale"),
-            InlineKeyboardButton("📈 Отчёты", callback_data="cmd_reports"),
+            InlineKeyboardButton("💰 Sales", callback_data="cmd_sale"),
+            InlineKeyboardButton("📈 Reports", callback_data="cmd_reports"),
         ],
         [
-            InlineKeyboardButton("ℹ️ Помощь", callback_data="cmd_help"),
-            InlineKeyboardButton("⚙️ Статус", callback_data="cmd_status"),
+            InlineKeyboardButton("ℹ️ Help", callback_data="cmd_help"),
+            InlineKeyboardButton("⚙️ Status", callback_data="cmd_status"),
         ],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -121,8 +121,8 @@ async def handle_main_menu_callback(update: Update, context: ContextTypes.DEFAUL
         "cmd_add_inventory": "/add_inventory",
         "cmd_consume_inventory": "/consume_inventory",
         "cmd_view_logs": "/view_logs",
-        "cmd_sale": "💰 Чтобы зарегистрировать продажу, используй:\n`/sale <SKU> <количество> [цена]`\n\nПример: `/sale BAR-S-01 5`",
-        "cmd_reports": "📈 Доступные отчёты:\n• `/report day` - За сегодня\n• `/report week` - За неделю\n• `/report month` - За месяц",
+        "cmd_sale": "💰 To register a sale, use:\n`/sale <SKU> <quantity> [price]`\n\nExample: `/sale BAR-S-01 5`",
+        "cmd_reports": "📈 Available reports:\n• `/report day` - Today's report\n• `/report week` - Weekly report\n• `/report month` - Monthly report",
         "cmd_help": "/help",
         "cmd_status": "/status",
     }
@@ -135,7 +135,7 @@ async def handle_main_menu_callback(update: Update, context: ContextTypes.DEFAUL
         # If it's a command, send it as text so user can click it
         if response.startswith("/"):
             await query.message.reply_text(
-                f"👉 Нажми на команду: {response}",
+                f"👉 Click the command: {response}",
                 parse_mode="Markdown"
             )
         else:
