@@ -1,15 +1,15 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 
 def get_main_menu_keyboard():
-    # Простое меню для персонала внизу экрана (Reply Keyboard)
+    # Main menu for staff (Bottom of screen)
     keyboard = [
-        [KeyboardButton("💰 Сдать кассу"), KeyboardButton("🕵️ Ревизия")],
-        [KeyboardButton("🏭 Производство"), KeyboardButton("📦 Закупка")]
+        [KeyboardButton("💰 Cash Drop"), KeyboardButton("🕵️ Spot Check")],
+        [KeyboardButton("🏭 Production"), KeyboardButton("📦 Restock")]
     ]
     return ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
 def get_production_keyboard(products):
-    # Инлайн кнопки с выбором продукта для производства
+    # Inline buttons for selecting product to produce
     keyboard = []
     for p in products:
         keyboard.append([InlineKeyboardButton(f"Make {p.name}", callback_data=f"prod_{p.id}")])

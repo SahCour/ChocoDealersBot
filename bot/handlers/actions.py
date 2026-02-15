@@ -1,60 +1,86 @@
 from telegram import Update, ReplyKeyboardRemove
-from telegram.ext import ContextTypes, ConversationHandler, CommandHandler, MessageHandler, filters, CallbackQueryHandler
-from database.db import AsyncSessionLocal
-from database.models import Product, Ingredient, AuditLog
+from telegram.ext import ContextTypes, ConversationHandler, CommandHandler, MessageHandler, filters
 from bot.keyboards import get_main_menu_keyboard
-from sqlalchemy import select
+from integrations.square_client import square_client
 from loguru import logger
 
-# Состояния для диалогов
+# Conversation States
 CASH_COUNT = 1
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Старт смены"""
+    """Shift Start - Main Entry Point"""
+    user = update.effective_user
     await update.message.reply_text(
-        "👮‍♂️ **ChocoBot Police Mode**\n\n"
-        "Смена открыта. Работайте через Square POS.\n"
-        "В конце смены нажмите '💰 Сдать кассу'.",
+        f"👮‍♂️ **System Online**\n"
+        f"User: {user.first_name}\n\n"
+        "**INSTRUCTIONS:**\n"
+        "1. Work via Square POS on iPad.\n"
+        "2. Only use this bot for Cash Drops and Checks.\n"
+        "3. If you see 'Spot Check', count the items immediately.",
         reply_markup=get_main_menu_keyboard(),
         parse_mode="Markdown"
     )
 
 async def cash_check_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Начало проверки кассы"""
+    """Start Blind Cash Count"""
     await update.message.reply_text(
-        "💵 **СЛЕПОЙ ПОДСЧЕТ**\n\n"
-        "Посчитайте наличные в ящике.\n"
-        "Напишите сумму цифрами (например: 3500):",
+        "💵 **BLIND CASH COUNT**\n\n"
+        "1. Open the cash drawer.\n"
+        "2. Count ALL cash (bills + coins).\n"
+        "3. Do NOT look at Square report.\n\n"
+        "👇 **Type the total amount below (numbers only):**",
         reply_markup=ReplyKeyboardRemove()
     )
     return CASH_COUNT
 
 async def cash_check_complete(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработка введенной суммы"""
+    """Process Cash Amount"""
     text = update.message.text
+    user = update.effective_user
+
     try:
-        amount = float(text)
-        # ТУТ ПОЗЖЕ БУДЕТ СВЕРКА СО SQUARE
-        expected = 4000.0  # Mock
+        # 1. Parse Input
+        amount = float(text.replace(",", ""))
+
+        # 2. Compare with Square (Mock for now)
+        expected = await square_client.get_total_expected_cash()
         diff = amount - expected
 
-        status = "✅ OK" if abs(diff) < 50 else f"🚨 РАСХОЖДЕНИЕ: {diff}"
+        # 3. Determine Status
+        if abs(diff) < 50:
+            status = "✅ MATCHED"
+            msg = "Great job! Numbers match."
+        else:
+            status = f"🚨 MISMATCH ({diff:+.2f} THB)"
+            msg = "⚠️ Manager has been notified."
 
+        # 4. Log (Audit Trail)
+        logger.info(f"CASH CHECK: User={user.first_name}, Counted={amount}, Expected={expected}, Diff={diff}")
+
+        # 5. Reply to Staff
         await update.message.reply_text(
-            f"Принято: {amount} THB.\n"
-            f"Статус: {status}\n\n"
-            "Меню возвращено.",
-            reply_markup=get_main_menu_keyboard()
+            f"📥 **Cash Drop Accepted**\n"
+            f"Amount: {amount:,.2f} THB\n"
+            f"Status: {status}\n"
+            f"{msg}\n\n"
+            "Returning to menu...",
+            reply_markup=get_main_menu_keyboard(),
+            parse_mode="Markdown"
         )
         return ConversationHandler.END
+
     except ValueError:
-        await update.message.reply_text("Пожалуйста, введите только цифры.")
+        await update.message.reply_text("⚠️ Error: Please enter numbers only (e.g. 3500)")
         return CASH_COUNT
 
 async def production_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Меню производства"""
-    await update.message.reply_text("Эта функция в разработке 🏭")
+    """Production Menu Stub"""
+    await update.message.reply_text("🏭 Production menu is coming soon.\nUse Square to track sales for now.")
+
+async def restock_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Restock Menu Stub"""
+    await update.message.reply_text("📦 Restock menu is coming soon.")
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Отменено", reply_markup=get_main_menu_keyboard())
+    await update.message.reply_text("❌ Action cancelled.", reply_markup=get_main_menu_keyboard())
     return ConversationHandler.END

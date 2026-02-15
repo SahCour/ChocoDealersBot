@@ -27,9 +27,15 @@ class SquareClient:
         return False
 
     async def get_sales_today(self) -> float:
-        """Получить сумму продаж за сегодня (Mock)"""
+        """Get total sales amount for today (Mock)"""
         if self.is_mock:
-            return 4000.0  # Square думает, что продали на 4000
+            return 4000.0
+        return 0.0
+
+    async def get_total_expected_cash(self) -> float:
+        """Get expected cash in drawer based on Square sales (Mock)"""
+        if self.is_mock:
+            return 4000.0  # Mock: Square expects 4000 THB in drawer
         return 0.0
 
 
