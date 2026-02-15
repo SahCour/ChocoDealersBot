@@ -47,11 +47,7 @@ async def init_db() -> None:
         async with engine.begin() as conn:
             await conn.execute(text('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'))
 
-            logger.warning("☢️ NUCLEAR OPTION: DROP SCHEMA CASCADE...")
-            await conn.execute(text("DROP SCHEMA public CASCADE"))
-            await conn.execute(text("CREATE SCHEMA public"))
-
-            logger.info("⚡ Creating new schema (Police Mode)...")
+            logger.info("⚡ Checking/Creating tables (Police Mode)...")
             await conn.run_sync(Base.metadata.create_all)
 
             logger.info("✅ Database schema created FRESH.")
