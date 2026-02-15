@@ -1,5 +1,5 @@
-import asyncio
 import sys
+import asyncio
 from config.config import settings
 from loguru import logger
 from bot.utils.logger import setup_logger
@@ -10,32 +10,25 @@ from telegram import Update
 from telegram.ext import (
     Application,
     CommandHandler,
-    CallbackQueryHandler,
-    ContextTypes,
-    TypeHandler,
+    MessageHandler,
+    filters,
+    ConversationHandler,
 )
 
 from database.db import init_db, close_db
-from database.seed import seed_data  # <--- НОВЫЙ ИМПОРТ
-from bot.handlers import commands, admin, inventory
+from database.seed import seed_data
 from bot.middleware.auth import AuthMiddleware
-from bot.utils.staff_auth import handle_staff_selection_callback
-
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    user = update.effective_user
-    await update.message.reply_text(f"System Online. Welcome, {user.first_name}!")
+from bot.handlers.actions import (
+    start, cash_check_start, cash_check_complete,
+    production_start, cancel, CASH_COUNT
+)
 
 
 async def post_init(application: Application) -> None:
-    """Инициализация при старте"""
-    logger.info("🔄 Running post-init setup...")
-    try:
-        await init_db()   # Создает таблицы
-        await seed_data() # Заполняет рецепты
-        logger.success("✅ System initialized successfully")
-    except Exception as e:
-        logger.exception(f"❌ CRITICAL INIT ERROR: {e}")
+    logger.info("🔄 Post-init setup...")
+    await init_db()
+    await seed_data()
+    logger.success("✅ System initialized")
 
 
 async def post_shutdown(application: Application) -> None:
@@ -43,7 +36,7 @@ async def post_shutdown(application: Application) -> None:
 
 
 def main() -> None:
-    logger.info("🚀 Starting ChocoBot v2.0 (Police Mode)...")
+    logger.info("🚀 Starting ChocoBot (Clean Build)...")
 
     application = (
         Application.builder()
@@ -53,19 +46,18 @@ def main() -> None:
         .build()
     )
 
-    # Middleware
-    auth_middleware = AuthMiddleware()
-    application.add_handler(TypeHandler(Update, auth_middleware), group=-1)
+    # Диалог сдачи кассы
+    cash_handler = ConversationHandler(
+        entry_points=[MessageHandler(filters.Regex("^💰 Сдать кассу$"), cash_check_start)],
+        states={
+            CASH_COUNT: [MessageHandler(filters.TEXT & ~filters.COMMAND, cash_check_complete)],
+        },
+        fallbacks=[CommandHandler("cancel", cancel)]
+    )
 
-    # Handlers
     application.add_handler(CommandHandler("start", start))
-
-    # Временно оставим старые хендлеры, позже заменим на Меню Персонала
-    application.add_handler(inventory.get_add_inventory_handler())
-    application.add_handler(inventory.get_consume_inventory_handler())
-    application.add_handler(CommandHandler("inventory", commands.inventory_command))
-
-    application.add_handler(CallbackQueryHandler(handle_staff_selection_callback, pattern=r"^staff_select:"))
+    application.add_handler(cash_handler)
+    application.add_handler(MessageHandler(filters.Regex("^🏭 Производство$"), production_start))
 
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
