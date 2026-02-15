@@ -9,7 +9,7 @@ from typing import AsyncGenerator
 from loguru import logger
 
 from config.config import settings
-from database.models import Base
+from database.base import Base
 
 def get_async_database_url(url: str) -> str:
     """Convert PostgreSQL URL to async format"""
