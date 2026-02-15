@@ -1,3 +1,18 @@
+#!/bin/bash
+set -e
+cd "$(dirname "$0")"
+echo "🔌 Wiring up Square API..."
+
+# 1. ADD HTTPX TO REQUIREMENTS (Required for real API calls)
+if ! grep -q "httpx" requirements.txt; then
+    echo "httpx>=0.27.0" >> requirements.txt
+    echo "✅ Added httpx to requirements.txt"
+else
+    echo "ℹ️  httpx already present in requirements.txt"
+fi
+
+# 2. UPDATE SQUARE CLIENT (Hybrid: auto-detects token in env)
+cat > integrations/square_client.py << 'PYEOF'
 import logging
 import httpx
 from datetime import datetime, timezone
@@ -91,3 +106,10 @@ class SquareClient:
 
 # Global instance — mode detected at startup from env vars
 square_client = SquareClient()
+PYEOF
+
+echo "✅ Square Client updated (Hybrid Mode)."
+echo ""
+echo "🚀 READY. To go live:"
+echo "   Add SQUARE_ACCESS_TOKEN + SQUARE_LOCATION_ID to Railway env vars."
+echo "   Bot will auto-switch to Real API on next deploy."
