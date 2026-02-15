@@ -4,15 +4,17 @@ from sqlalchemy.sql import func
 import enum
 from .db import Base
 
-# --- ENUMS ---
+
 class IngredientType(str, enum.Enum):
     RAW = "raw"
     PACKAGING = "packaging"
+
 
 class UnitType(str, enum.Enum):
     GRAMS = "g"
     PCS = "pcs"
     KG = "kg"
+
 
 class Ingredient(Base):
     __tablename__ = "ingredients"
@@ -25,6 +27,7 @@ class Ingredient(Base):
     supplier = Column(String, nullable=True)
     recipe_items = relationship("RecipeItem", back_populates="ingredient")
 
+
 class Product(Base):
     __tablename__ = "products"
     id = Column(Integer, primary_key=True, index=True)
@@ -34,6 +37,7 @@ class Product(Base):
     price = Column(Float, default=0.0)
     recipe_items = relationship("RecipeItem", back_populates="product")
 
+
 class RecipeItem(Base):
     __tablename__ = "recipe_items"
     id = Column(Integer, primary_key=True, index=True)
@@ -42,6 +46,7 @@ class RecipeItem(Base):
     amount = Column(Float, nullable=False)
     product = relationship("Product", back_populates="recipe_items")
     ingredient = relationship("Ingredient", back_populates="recipe_items")
+
 
 class AuditLog(Base):
     __tablename__ = "audit_logs"

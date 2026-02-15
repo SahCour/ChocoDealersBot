@@ -3,7 +3,7 @@ import asyncio
 
 logger = logging.getLogger(__name__)
 
-# ПЕРЕКЛЮЧАТЕЛЬ: True = Тест без ключей, False = Боевой режим
+# SWITCH: True = Mock mode (no real keys), False = Live mode
 USE_MOCK = True
 
 
@@ -12,15 +12,14 @@ class SquareClient:
         self.is_mock = USE_MOCK
 
     async def get_inventory(self, product_name: str) -> int:
-        """Узнать остаток товара (Mock)"""
+        """Get product stock level (Mock)"""
         if self.is_mock:
-            # Имитация данных Square
             mock_db = {"Eskimo Coconut": 10, "Truffle Classic": 5}
             return mock_db.get(product_name, 0)
         return 0
 
     async def update_inventory(self, product_name: str, quantity: int):
-        """Изменить остаток в Square (Mock)"""
+        """Update stock in Square (Mock)"""
         if self.is_mock:
             logger.info(f"✅ [MOCK SQUARE] Inventory update: {product_name} += {quantity}")
             return True
@@ -39,5 +38,5 @@ class SquareClient:
         return 0.0
 
 
-# Глобальный экземпляр
+# Global instance
 square_client = SquareClient()

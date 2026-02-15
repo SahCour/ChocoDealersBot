@@ -1,5 +1,6 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 
+
 def get_main_menu_keyboard():
     # Main menu for staff (Bottom of screen)
     keyboard = [
@@ -7,6 +8,7 @@ def get_main_menu_keyboard():
         [KeyboardButton("🏭 Production"), KeyboardButton("📦 Restock")]
     ]
     return ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+
 
 def get_production_keyboard(products):
     # Inline buttons for selecting product to produce
