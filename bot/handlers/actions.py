@@ -73,10 +73,6 @@ async def cash_check_complete(update: Update, context: ContextTypes.DEFAULT_TYPE
         await update.message.reply_text("⚠️ Error: Please enter numbers only (e.g. 3500)")
         return CASH_COUNT
 
-async def production_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Production Menu Stub"""
-    await update.message.reply_text("🏭 Production menu is coming soon.\nUse Square to track sales for now.")
-
 async def restock_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Restock Menu Stub"""
     await update.message.reply_text("📦 Restock menu is coming soon.")

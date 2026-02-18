@@ -1,5 +1,4 @@
 import sys
-import asyncio
 from config.config import settings
 from loguru import logger
 from bot.utils.logger import setup_logger
@@ -13,6 +12,7 @@ from telegram.ext import (
     MessageHandler,
     filters,
     ConversationHandler,
+    CallbackQueryHandler,
     TypeHandler
 )
 
@@ -23,10 +23,17 @@ from bot.handlers.actions import (
     start,
     cash_check_start,
     cash_check_complete,
-    production_start,
     restock_start,
-    cancel,
+    cancel as action_cancel,
     CASH_COUNT
+)
+from bot.handlers.production import (
+    production_start,
+    production_select,
+    production_confirm,
+    cancel as prod_cancel,
+    SELECT_PRODUCT,
+    ENTER_QUANTITY
 )
 
 
@@ -42,7 +49,7 @@ async def post_shutdown(application: Application) -> None:
 
 
 def main() -> None:
-    logger.info("🚀 Starting ChocoBot (English Version)...")
+    logger.info("🚀 Starting ChocoBot (Production Build)...")
 
     application = (
         Application.builder()
@@ -55,24 +62,32 @@ def main() -> None:
     # Middleware
     application.add_handler(TypeHandler(Update, AuthMiddleware()), group=-1)
 
-    # Cash Drop Conversation
+    # 1. Cash Drop Conversation
     cash_handler = ConversationHandler(
         entry_points=[MessageHandler(filters.Regex("^💰 Cash Drop$"), cash_check_start)],
         states={
             CASH_COUNT: [MessageHandler(filters.TEXT & ~filters.COMMAND, cash_check_complete)],
         },
-        fallbacks=[CommandHandler("cancel", cancel)]
+        fallbacks=[CommandHandler("cancel", action_cancel)]
     )
 
-    # Main Commands
+    # 2. Production Conversation
+    prod_handler = ConversationHandler(
+        entry_points=[MessageHandler(filters.Regex("^🏭 Production$"), production_start)],
+        states={
+            SELECT_PRODUCT: [CallbackQueryHandler(production_select)],
+            ENTER_QUANTITY: [MessageHandler(filters.TEXT & ~filters.COMMAND, production_confirm)]
+        },
+        fallbacks=[
+            CommandHandler("cancel", prod_cancel),
+            CallbackQueryHandler(prod_cancel, pattern="^cancel$")
+        ]
+    )
+
     application.add_handler(CommandHandler("start", start))
     application.add_handler(cash_handler)
-
-    # Simple Buttons
-    application.add_handler(MessageHandler(filters.Regex("^🏭 Production$"), production_start))
+    application.add_handler(prod_handler)
     application.add_handler(MessageHandler(filters.Regex("^📦 Restock$"), restock_start))
-
-    # Spot Check (Stub)
     application.add_handler(MessageHandler(
         filters.Regex("^🕵️ Spot Check$"),
         lambda u, c: u.message.reply_text("🕵️ Random check coming soon!")
