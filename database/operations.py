@@ -61,3 +61,39 @@ async def process_production(session: AsyncSession, product_id: int, quantity: i
         "product_name": product.name,
         "report": "\n".join(report)
     }
+
+
+async def get_all_ingredients(session: AsyncSession):
+    """Fetch all ingredients (Raw + Packaging) ordered by name"""
+    result = await session.execute(select(Ingredient).order_by(Ingredient.name))
+    return result.scalars().all()
+
+
+async def process_restock(session: AsyncSession, ingredient_id: int, quantity: float, user_name: str):
+    """
+    1. Increase ingredient stock
+    2. Log the purchase in AuditLog
+    """
+    ingredient = await session.get(Ingredient, ingredient_id)
+    if not ingredient:
+        return {"success": False, "error": "Ingredient not found"}
+
+    # Update Stock
+    old_stock = ingredient.current_stock
+    ingredient.current_stock += quantity
+
+    # Audit Log
+    log_entry = AuditLog(
+        event_type="RESTOCK",
+        staff_name=user_name,
+        details=f"Restocked {ingredient.name}. {old_stock} -> {ingredient.current_stock} ({ingredient.unit.value})"
+    )
+    session.add(log_entry)
+    await session.commit()
+
+    return {
+        "success": True,
+        "name": ingredient.name,
+        "new_stock": ingredient.current_stock,
+        "unit": ingredient.unit.value
+    }

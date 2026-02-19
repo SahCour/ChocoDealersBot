@@ -23,7 +23,6 @@ from bot.handlers.actions import (
     start,
     cash_check_start,
     cash_check_complete,
-    restock_start,
     cancel as action_cancel,
     CASH_COUNT
 )
@@ -34,6 +33,14 @@ from bot.handlers.production import (
     cancel as prod_cancel,
     SELECT_PRODUCT,
     ENTER_QUANTITY
+)
+from bot.handlers.restock import (
+    restock_start,
+    restock_select,
+    restock_confirm,
+    cancel as restock_cancel,
+    SELECT_INGREDIENT,
+    ENTER_QTY
 )
 
 
@@ -49,7 +56,7 @@ async def post_shutdown(application: Application) -> None:
 
 
 def main() -> None:
-    logger.info("🚀 Starting ChocoBot (Production Build)...")
+    logger.info("🚀 Starting ChocoBot (Full Ops)...")
 
     application = (
         Application.builder()
@@ -62,16 +69,16 @@ def main() -> None:
     # Middleware
     application.add_handler(TypeHandler(Update, AuthMiddleware()), group=-1)
 
-    # 1. Cash Drop Conversation
+    # 1. Cash Drop
     cash_handler = ConversationHandler(
         entry_points=[MessageHandler(filters.Regex("^💰 Cash Drop$"), cash_check_start)],
         states={
-            CASH_COUNT: [MessageHandler(filters.TEXT & ~filters.COMMAND, cash_check_complete)],
+            CASH_COUNT: [MessageHandler(filters.TEXT & ~filters.COMMAND, cash_check_complete)]
         },
         fallbacks=[CommandHandler("cancel", action_cancel)]
     )
 
-    # 2. Production Conversation
+    # 2. Production
     prod_handler = ConversationHandler(
         entry_points=[MessageHandler(filters.Regex("^🏭 Production$"), production_start)],
         states={
@@ -84,10 +91,23 @@ def main() -> None:
         ]
     )
 
+    # 3. Restock
+    restock_handler = ConversationHandler(
+        entry_points=[MessageHandler(filters.Regex("^📦 Restock$"), restock_start)],
+        states={
+            SELECT_INGREDIENT: [CallbackQueryHandler(restock_select)],
+            ENTER_QTY: [MessageHandler(filters.TEXT & ~filters.COMMAND, restock_confirm)]
+        },
+        fallbacks=[
+            CommandHandler("cancel", restock_cancel),
+            CallbackQueryHandler(restock_cancel, pattern="^cancel$")
+        ]
+    )
+
     application.add_handler(CommandHandler("start", start))
     application.add_handler(cash_handler)
     application.add_handler(prod_handler)
-    application.add_handler(MessageHandler(filters.Regex("^📦 Restock$"), restock_start))
+    application.add_handler(restock_handler)
     application.add_handler(MessageHandler(
         filters.Regex("^🕵️ Spot Check$"),
         lambda u, c: u.message.reply_text("🕵️ Random check coming soon!")
